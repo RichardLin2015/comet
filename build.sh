@@ -1,0 +1,1 @@
+gcc -o acc ./accelerometer.c -lm
