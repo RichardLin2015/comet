@@ -121,12 +121,22 @@ SHIFT_TYPE integral_function(long int sample_count, ACCELEROMETER_META_DATA_TYPE
 /*
 * Get zero reference
 */
-void get_zero_reference(\
-ACCELEROMETER_META_DATA_TYPE* upper, \
-ACCELEROMETER_META_DATA_TYPE* lowwer, \
-long int sample_count, \
-ACCELEROMETER_META_DATA_TYPE* sample_array)
+void get_zero_reference(ACCELEROMETER_META_DATA_TYPE* mean_value)
 {
+    int i;
+    long double x_t = 0;
+    long double y_t = 0;
+    long double z_t = 0;
+    for(i=0;i<ZERO_REFERENCE_COUNT;i++)
+    {
+        x_t += zero_array[i].x;
+        y_t += zero_array[i].y;
+        z_t += zero_array[i].z;
+    }
+    mean_value ->x = x_t/ZERO_REFERENCE_COUNT;
+    mean_value ->y = y_t/ZERO_REFERENCE_COUNT;
+    mean_value ->z = z_t/ZERO_REFERENCE_COUNT;
+    TRACE("%.7Lf, %.7Lf, %.7Lf",mean_value ->x,mean_value ->y,mean_value ->z);
 }
 
 /*
@@ -420,6 +430,7 @@ int main(int argc, char** argv)
 
     ACCELEROMETER_META_DATA_TYPE upper_ref;
     ACCELEROMETER_META_DATA_TYPE lowwer_ref;
+    ACCELEROMETER_META_DATA_TYPE mean_ref;
 
     g_pFile = fopen(META_DATA_FILE_PATH,"r");
 
@@ -447,7 +458,7 @@ int main(int argc, char** argv)
     
     data_read_zero_array(ZERO_REFERENCE_COUNT, &read_count);
 
-    get_zero_reference(&upper_ref,&lowwer_ref,read_count,zero_array);
+    get_zero_reference(&mean_ref);
 
     return 0;
 
